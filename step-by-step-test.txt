@@ -1,0 +1,73 @@
+// STEP-BY-STEP HARDHAT CONSOLE TESTS
+// Copy each command one by one into the Hardhat console
+
+// ===== STEP 1: BASIC SETUP =====
+console.log("🚀 Step 1: Basic Setup");
+const [deployer] = await ethers.getSigners();
+console.log("Deployer:", deployer.address);
+
+// ===== STEP 2: DEPLOY COUNTER =====
+console.log("📄 Step 2: Deploy Counter");
+const Counter = await ethers.getContractFactory("Counter");
+const counter = await Counter.deploy();
+await counter.waitForDeployment();
+console.log("✅ Counter deployed to:", await counter.getAddress());
+
+// ===== STEP 3: TEST COUNTER =====
+console.log("🔧 Step 3: Test Counter");
+console.log("Initial value:", (await counter.x()).toString());
+await counter.inc();
+console.log("After inc():", (await counter.x()).toString());
+await counter.incBy(5);
+console.log("After incBy(5):", (await counter.x()).toString());
+
+// ===== STEP 4: TEST ERROR CASE =====
+console.log("🚫 Step 4: Test Error Case");
+try {
+  await counter.incBy(0);
+  console.log("❌ Should have failed!");
+} catch (error) {
+  console.log("✅ Correctly rejected:", error.reason);
+}
+
+// ===== STEP 5: DEPLOY UNIVERSITY =====
+console.log("📄 Step 5: Deploy UniversityManagement");
+const UniversityManagement = await ethers.getContractFactory("UniversityManagement");
+const university = await UniversityManagement.deploy();
+await university.waitForDeployment();
+console.log("✅ University deployed to:", await university.getAddress());
+
+// ===== STEP 6: TEST UNIVERSITY =====
+console.log("🔧 Step 6: Test University");
+const studentAddr = "0x742d35Cc6634C0532925a3b8D5c0F2f7E8C8e4b5";
+await university.registerStudent(studentAddr, "STU001", "John Doe", "john@university.edu");
+console.log("✅ Student registered");
+
+await university.issueCredential(studentAddr, "0x123456789abcdef", "Bachelor Degree", "QmXXXX");
+console.log("✅ Credential issued");
+
+const cred = await university.queryCredentialByID(1);
+console.log("Credential:", cred.credentialType, "for", cred.studentAddress);
+
+// ===== STEP 7: DEPLOY CREDENTIAL MANAGEMENT =====
+console.log("📄 Step 7: Deploy CredentialManagement");
+const CredentialManagement = await ethers.getContractFactory("CredentialManagement");
+const credMgmt = await CredentialManagement.deploy();
+await credMgmt.waitForDeployment();
+console.log("✅ CredentialManagement deployed to:", await credMgmt.getAddress());
+
+// ===== STEP 8: TEST CREDENTIAL MANAGEMENT =====
+console.log("🔧 Step 8: Test CredentialManagement");
+await credMgmt.issueCredential(studentAddr, "Computer Science", "CS101", 85, 3, "ipfs://test");
+console.log("✅ Credential issued in CredentialManagement");
+
+const credDetails = await credMgmt.getCredential(1);
+console.log("Credential:", credDetails.program, "Grade:", credDetails.grade.toString());
+
+// ===== FINAL SUMMARY =====
+console.log("🎉 ALL TESTS COMPLETED SUCCESSFULLY!");
+console.log("Summary:");
+console.log("- Counter:", await counter.getAddress());
+console.log("- University:", await university.getAddress());  
+console.log("- CredentialMgmt:", await credMgmt.getAddress());
+console.log("Final counter value:", (await counter.x()).toString());

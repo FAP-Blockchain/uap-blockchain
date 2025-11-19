@@ -1,0 +1,32 @@
+﻿node_modules/
+.env
+.env.local
+.env.production
+
+# Hardhat files
+cache/
+artifacts/
+typechain-types/
+
+# TypeScript
+dist/
+*.tsbuildinfo
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Test coverage
+coverage/
+.nyc_output/
