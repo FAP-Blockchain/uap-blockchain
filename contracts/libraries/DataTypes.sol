@@ -9,10 +9,9 @@ library DataTypes {
     // User roles in the system
     enum Role {
         NONE,           // 0: No role
-        ADMIN,          // 1: System administrator
-        UNIVERSITY,     // 2: University official
-        LECTURER,       // 3: Teaching staff
-        STUDENT         // 4: Student
+        ADMIN,          // 1: System administrator (includes staff duties)
+        LECTURER,       // 2: Teaching staff
+        STUDENT         // 3: Student
     }
 
     // Credential status

@@ -28,13 +28,14 @@ const config: HardhatUserConfig = {
     
     localhost: {
       url: "http://127.0.0.1:8545",
-      chainId: 31337
+      chainId: 31337,
+      initialBaseFeePerGas: 0
     },
     
     quorum_local: {
       url: process.env.QUORUM_NODE_URL || "http://127.0.0.1:22000",
       chainId: parseInt(process.env.QUORUM_CHAIN_ID || "1337"),
-      gas: 4700000,
+      gas: 5000000,
       gasPrice: 0,
       accounts: {
         mnemonic: process.env.QUORUM_MNEMONIC || "test test test test test test test test test test test junk",

@@ -4,6 +4,10 @@ pragma solidity ^0.8.28;
 import "./interfaces/ICredential.sol";
 import "./libraries/DataTypes.sol";
 
+interface IUniversityManagement {
+    function requireRole(address userAddress, DataTypes.Role role) external view;
+}
+
 /**
  * @title CredentialManagement
  * @notice Manages academic credentials issuance and verification
@@ -18,8 +22,8 @@ contract CredentialManagement is ICredential {
     uint256 public credentialCount;
     
     // Modifiers
-    modifier onlyAuthorized() {
-        // TODO: Check role through UniversityManagement contract
+    modifier onlyAdmin() {
+        IUniversityManagement(universityManagement).requireRole(msg.sender, DataTypes.Role.ADMIN);
         _;
     }
 
@@ -36,7 +40,7 @@ contract CredentialManagement is ICredential {
         string calldata credentialType,
         string calldata credentialData,
         uint256 expiresAt
-    ) external onlyAuthorized returns (uint256) {
+    ) external onlyAdmin returns (uint256) {
         require(studentAddress != address(0), "Invalid student address");
         require(bytes(credentialType).length > 0, "Credential type required");
         
@@ -64,7 +68,7 @@ contract CredentialManagement is ICredential {
     /**
      * @notice Revoke a credential
      */
-    function revokeCredential(uint256 credentialId) external onlyAuthorized {
+    function revokeCredential(uint256 credentialId) external onlyAdmin {
         require(credentials[credentialId].credentialId != 0, "Credential not found");
         require(
             credentials[credentialId].status == DataTypes.CredentialStatus.ACTIVE,

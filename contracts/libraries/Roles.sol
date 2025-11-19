@@ -106,16 +106,6 @@ library Roles {
     }
 
     /**
-     * @notice Check if account is university official
-     */
-    function isUniversity(
-        RoleData storage self,
-        address account
-    ) internal view returns (bool) {
-        return self.roles[account] == DataTypes.Role.UNIVERSITY;
-    }
-
-    /**
      * @notice Check if account is lecturer
      */
     function isLecturer(

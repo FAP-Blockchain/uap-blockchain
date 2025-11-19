@@ -4,6 +4,10 @@ pragma solidity ^0.8.28;
 import "./interfaces/IGrade.sol";
 import "./libraries/DataTypes.sol";
 
+interface IUniversityManagement {
+    function requireRole(address userAddress, DataTypes.Role role) external view;
+}
+
 /**
  * @title GradeManagement
  * @notice Manages student grade recording and approval
@@ -19,12 +23,12 @@ contract GradeManagement is IGrade {
     
     // Modifiers
     modifier onlyLecturer() {
-        // TODO: Check role through UniversityManagement contract
+        IUniversityManagement(universityManagement).requireRole(msg.sender, DataTypes.Role.LECTURER);
         _;
     }
     
-    modifier onlyUniversity() {
-        // TODO: Check role through UniversityManagement contract
+    modifier onlyAdmin() {
+        IUniversityManagement(universityManagement).requireRole(msg.sender, DataTypes.Role.ADMIN);
         _;
     }
 
@@ -93,9 +97,9 @@ contract GradeManagement is IGrade {
     }
 
     /**
-     * @notice Approve a grade (University official only)
+     * @notice Approve a grade (Admin only)
      */
-    function approveGrade(uint256 gradeId) external onlyUniversity {
+    function approveGrade(uint256 gradeId) external onlyAdmin {
         require(gradeRecords[gradeId].gradeId != 0, "Grade not found");
         require(
             gradeRecords[gradeId].status != DataTypes.GradeStatus.FINAL,

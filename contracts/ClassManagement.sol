@@ -3,6 +3,10 @@ pragma solidity ^0.8.28;
 
 import "./libraries/DataTypes.sol";
 
+interface IUniversityManagement {
+    function requireRole(address userAddress, DataTypes.Role role) external view;
+}
+
 /**
  * @title ClassManagement
  * @notice Manages class creation and student enrollment
@@ -38,8 +42,8 @@ contract ClassManagement {
     );
 
     // Modifiers
-    modifier onlyUniversity() {
-        // TODO: Check role through UniversityManagement contract
+    modifier onlyAdmin() {
+        IUniversityManagement(universityManagement).requireRole(msg.sender, DataTypes.Role.ADMIN);
         _;
     }
     
@@ -66,7 +70,7 @@ contract ClassManagement {
         uint256 startDate,
         uint256 endDate,
         uint256 maxStudents
-    ) external onlyUniversity returns (uint256) {
+    ) external onlyAdmin returns (uint256) {
         require(bytes(classCode).length > 0, "Class code required");
         require(lecturerAddress != address(0), "Invalid lecturer address");
         require(maxStudents > 0, "Max students must be greater than 0");
@@ -98,7 +102,7 @@ contract ClassManagement {
     function enrollStudent(
         uint256 classId,
         address studentAddress
-    ) external onlyUniversity returns (uint256) {
+    ) external onlyAdmin returns (uint256) {
         require(classes[classId].classId != 0, "Class not found");
         require(classes[classId].isActive, "Class is not active");
         require(studentAddress != address(0), "Invalid student address");
@@ -135,7 +139,7 @@ contract ClassManagement {
     function dropStudent(
         uint256 classId,
         address studentAddress
-    ) external onlyUniversity {
+    ) external onlyAdmin {
         require(classes[classId].classId != 0, "Class not found");
         require(isEnrolled[classId][studentAddress], "Student not enrolled");
 

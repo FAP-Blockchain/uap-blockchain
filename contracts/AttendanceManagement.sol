@@ -4,6 +4,10 @@ pragma solidity ^0.8.28;
 import "./interfaces/IAttendance.sol";
 import "./libraries/DataTypes.sol";
 
+interface IUniversityManagement {
+    function requireRole(address userAddress, DataTypes.Role role) external view;
+}
+
 /**
  * @title AttendanceManagement
  * @notice Manages student attendance tracking
@@ -20,7 +24,7 @@ contract AttendanceManagement is IAttendance {
     
     // Modifiers
     modifier onlyLecturer() {
-        // TODO: Check role through UniversityManagement contract
+        IUniversityManagement(universityManagement).requireRole(msg.sender, DataTypes.Role.LECTURER);
         _;
     }
 

@@ -46,11 +46,11 @@ describe("UniversityManagement", function () {
           "STU001",
           "John Doe",
           "john@example.com",
-          4 // STUDENT role
+          3 // STUDENT role
         )
       )
         .to.emit(universityManagement, "UserRegistered")
-        .withArgs(user1.address, "STU001", 4);
+        .withArgs(user1.address, "STU001", 3);
 
       const user = await universityManagement.getUser(user1.address);
       expect(user.fullName).to.equal("John Doe");
@@ -63,7 +63,7 @@ describe("UniversityManagement", function () {
         "STU001",
         "John Doe",
         "john@example.com",
-        4
+        3
       );
 
       await expect(
@@ -72,7 +72,7 @@ describe("UniversityManagement", function () {
           "STU002",
           "Jane Doe",
           "jane@example.com",
-          4
+          3
         )
       ).to.be.revertedWith("User already registered");
     });
@@ -83,7 +83,7 @@ describe("UniversityManagement", function () {
         "STU001",
         "John Doe",
         "john@example.com",
-        4
+        3
       );
 
       await expect(
@@ -92,7 +92,7 @@ describe("UniversityManagement", function () {
           "STU001",
           "Jane Doe",
           "jane@example.com",
-          4
+          3
         )
       ).to.be.revertedWith("User ID already taken");
     });
@@ -104,7 +104,7 @@ describe("UniversityManagement", function () {
           "STU001",
           "John Doe",
           "john@example.com",
-          4
+          3
         )
       ).to.be.revertedWith("Roles: caller is not admin");
     });
@@ -117,7 +117,7 @@ describe("UniversityManagement", function () {
         "STU001",
         "John Doe",
         "john@example.com",
-        4
+        3
       );
     });
 
@@ -156,18 +156,18 @@ describe("UniversityManagement", function () {
         "LEC001",
         "Lecturer",
         "lec@example.com",
-        3 // LECTURER
+        2 // LECTURER
       );
 
-      expect(await universityManagement.hasRole(user1.address, 3)).to.be.true;
-      expect(await universityManagement.hasRole(user1.address, 4)).to.be.false;
+      expect(await universityManagement.hasRole(user1.address, 2)).to.be.true;
+      expect(await universityManagement.hasRole(user1.address, 3)).to.be.false;
     });
 
     it("Should count roles correctly", async function () {
-      await universityManagement.registerUser(user1.address, "STU001", "Student 1", "s1@example.com", 4);
-      await universityManagement.registerUser(user2.address, "STU002", "Student 2", "s2@example.com", 4);
+      await universityManagement.registerUser(user1.address, "STU001", "Student 1", "s1@example.com", 3);
+      await universityManagement.registerUser(user2.address, "STU002", "Student 2", "s2@example.com", 3);
 
-      const studentCount = await universityManagement.getRoleCount(4);
+      const studentCount = await universityManagement.getRoleCount(3);
       expect(studentCount).to.equal(2);
     });
   });

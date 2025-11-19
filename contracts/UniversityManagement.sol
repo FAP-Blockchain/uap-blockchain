@@ -62,8 +62,8 @@ contract UniversityManagement {
         users[msg.sender] = DataTypes.User({
             userAddress: msg.sender,
             userId: "ADMIN001",
-            fullName: "System Administrator",
-            email: "admin@university.edu",
+            fullName: "Administrator",
+            email: "admin@fap.edu.vn",
             role: DataTypes.Role.ADMIN,
             isActive: true,
             createdAt: block.timestamp
@@ -198,6 +198,10 @@ contract UniversityManagement {
 
     function hasRole(address userAddress, DataTypes.Role role) external view returns (bool) {
         return roleData.hasRole(userAddress, role);
+    }
+    
+    function requireRole(address userAddress, DataTypes.Role role) external view {
+        roleData.requireRole(userAddress, role);
     }
 
     function getTotalUsers() external view returns (uint256) {

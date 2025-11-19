@@ -22,6 +22,15 @@ describe("GradeManagement", function () {
     universityManagement = await UniversityManagement.deploy();
     await universityManagement.waitForDeployment();
 
+    // Register lecturer with LECTURER role (role = 2)
+    await universityManagement.registerUser(
+      lecturer.address,
+      "LEC001",
+      "Test Lecturer",
+      "lecturer@test.com",
+      2 // LECTURER role
+    );
+
     // Deploy GradeManagement
     const GradeManagement = await ethers.getContractFactory("GradeManagement");
     gradeManagement = await GradeManagement.deploy(
@@ -45,7 +54,7 @@ describe("GradeManagement", function () {
   describe("Record Grade", function () {
     it("Should record a grade for a student", async function () {
       await expect(
-        gradeManagement.recordGrade(
+        gradeManagement.connect(lecturer).recordGrade(
           CLASS_ID,
           student.address,
           "Midterm",
@@ -54,7 +63,7 @@ describe("GradeManagement", function () {
         )
       )
         .to.emit(gradeManagement, "GradeRecorded")
-        .withArgs(1, CLASS_ID, student.address, "Midterm", 8550, owner.address);
+        .withArgs(1, CLASS_ID, student.address, "Midterm", 8550, lecturer.address);
 
       const grade = await gradeManagement.getGrade(1);
       expect(grade.studentAddress).to.equal(student.address);
@@ -64,7 +73,7 @@ describe("GradeManagement", function () {
 
     it("Should reject score exceeding max score", async function () {
       await expect(
-        gradeManagement.recordGrade(
+        gradeManagement.connect(lecturer).recordGrade(
           CLASS_ID,
           student.address,
           "Midterm",
@@ -75,8 +84,8 @@ describe("GradeManagement", function () {
     });
 
     it("Should track multiple grade components", async function () {
-      await gradeManagement.recordGrade(CLASS_ID, student.address, "Midterm", 8500, 10000);
-      await gradeManagement.recordGrade(CLASS_ID, student.address, "Final", 9000, 10000);
+      await gradeManagement.connect(lecturer).recordGrade(CLASS_ID, student.address, "Midterm", 8500, 10000);
+      await gradeManagement.connect(lecturer).recordGrade(CLASS_ID, student.address, "Final", 9000, 10000);
 
       const grades = await gradeManagement.getStudentGrades(CLASS_ID, student.address);
       expect(grades.length).to.equal(2);
@@ -87,7 +96,7 @@ describe("GradeManagement", function () {
     let gradeId: number;
 
     beforeEach(async function () {
-      await gradeManagement.recordGrade(
+      await gradeManagement.connect(lecturer).recordGrade(
         CLASS_ID,
         student.address,
         "Midterm",
@@ -98,9 +107,9 @@ describe("GradeManagement", function () {
     });
 
     it("Should update draft grade", async function () {
-      await expect(gradeManagement.updateGrade(gradeId, 8500))
+      await expect(gradeManagement.connect(lecturer).updateGrade(gradeId, 8500))
         .to.emit(gradeManagement, "GradeUpdated")
-        .withArgs(gradeId, 8000, 8500, owner.address);
+        .withArgs(gradeId, 8000, 8500, lecturer.address);
 
       const grade = await gradeManagement.getGrade(gradeId);
       expect(grade.score).to.equal(8500);
@@ -108,13 +117,13 @@ describe("GradeManagement", function () {
 
     it("Should reject updating non-existent grade", async function () {
       await expect(
-        gradeManagement.updateGrade(999, 8500)
+        gradeManagement.connect(lecturer).updateGrade(999, 8500)
       ).to.be.revertedWith("Grade not found");
     });
 
     it("Should reject score exceeding max score", async function () {
       await expect(
-        gradeManagement.updateGrade(gradeId, 11000)
+        gradeManagement.connect(lecturer).updateGrade(gradeId, 11000)
       ).to.be.revertedWith("Score exceeds max score");
     });
   });
@@ -123,7 +132,7 @@ describe("GradeManagement", function () {
     let gradeId: number;
 
     beforeEach(async function () {
-      await gradeManagement.recordGrade(
+      await gradeManagement.connect(lecturer).recordGrade(
         CLASS_ID,
         student.address,
         "Midterm",
@@ -151,8 +160,8 @@ describe("GradeManagement", function () {
 
   describe("Grade Statistics", function () {
     it("Should calculate final grade", async function () {
-      await gradeManagement.recordGrade(CLASS_ID, student.address, "Midterm", 8000, 10000);
-      await gradeManagement.recordGrade(CLASS_ID, student.address, "Final", 9000, 10000);
+      await gradeManagement.connect(lecturer).recordGrade(CLASS_ID, student.address, "Midterm", 8000, 10000);
+      await gradeManagement.connect(lecturer).recordGrade(CLASS_ID, student.address, "Final", 9000, 10000);
 
       // TODO: Implement actual calculation when the function is completed
       const finalGrade = await gradeManagement.calculateFinalGrade(CLASS_ID, student.address);
