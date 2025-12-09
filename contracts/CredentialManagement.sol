@@ -36,6 +36,7 @@ contract CredentialManagement is ICredential {
         address studentAddress,
         string calldata credentialType,
         string calldata credentialData,
+        bytes32 verificationHash,
         uint256 expiresAt
     ) external onlyAdmin returns (uint256) {
         require(studentAddress != address(0), "Invalid student address");
@@ -49,6 +50,7 @@ contract CredentialManagement is ICredential {
             studentAddress: studentAddress,
             credentialType: credentialType,
             credentialData: credentialData,
+            verificationHash: verificationHash,
             status: DataTypes.CredentialStatus.ACTIVE,
             issuedBy: msg.sender,
             issuedAt: block.timestamp,

@@ -33,6 +33,7 @@ interface ICredential {
         address studentAddress,
         string calldata credentialType,
         string calldata credentialData,
+        bytes32 verificationHash,
         uint256 expiresAt
     ) external returns (uint256);
 

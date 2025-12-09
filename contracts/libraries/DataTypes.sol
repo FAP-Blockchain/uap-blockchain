@@ -55,6 +55,7 @@ library DataTypes {
         address studentAddress;
         string credentialType;  // "DEGREE", "CERTIFICATE", "TRANSCRIPT"
         string credentialData;  // IPFS hash or encrypted data
+        bytes32 verificationHash; // Hash used for off-chain/on-chain verification
         CredentialStatus status;
         address issuedBy;
         uint256 issuedAt;
