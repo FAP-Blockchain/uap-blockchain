@@ -3,10 +3,7 @@ pragma solidity ^0.8.28;
 
 import "./interfaces/IAttendance.sol";
 import "./libraries/DataTypes.sol";
-
-interface IUniversityManagement {
-    function requireRole(address userAddress, DataTypes.Role role) external view;
-}
+import "./interfaces/IUniversityManagement.sol";
 
 /**
  * @title AttendanceManagement
@@ -15,16 +12,15 @@ interface IUniversityManagement {
 contract AttendanceManagement is IAttendance {
     // State variables
     address public universityManagement;
-    
-    mapping(uint256 => DataTypes.AttendanceRecord) public attendanceRecords;
+    mapping(uint256 => DataTypes.AttendanceRecord) private attendanceRecords;
     mapping(uint256 => mapping(address => uint256[])) public classStudentAttendance;
     mapping(uint256 => uint256) public classAttendanceCount;
     
     uint256 public recordCount;
     
     // Modifiers
-    modifier onlyLecturer() {
-        IUniversityManagement(universityManagement).requireRole(msg.sender, DataTypes.Role.LECTURER);
+    modifier onlyTeacher() {
+        IUniversityManagement(universityManagement).requireRole(msg.sender, DataTypes.Role.TEACHER);
         _;
     }
 
@@ -42,7 +38,7 @@ contract AttendanceManagement is IAttendance {
         uint256 sessionDate,
         DataTypes.AttendanceStatus status,
         string calldata notes
-    ) external onlyLecturer returns (uint256) {
+    ) external onlyTeacher returns (uint256) {
         require(studentAddress != address(0), "Invalid student address");
         require(classId > 0, "Invalid class ID");
         
@@ -75,7 +71,7 @@ contract AttendanceManagement is IAttendance {
         uint256 recordId,
         DataTypes.AttendanceStatus newStatus,
         string calldata notes
-    ) external onlyLecturer {
+    ) external onlyTeacher {
         require(attendanceRecords[recordId].recordId != 0, "Record not found");
 
         DataTypes.AttendanceStatus oldStatus = attendanceRecords[recordId].status;
@@ -106,7 +102,7 @@ contract AttendanceManagement is IAttendance {
     /**
      * @notice Calculate attendance rate for a class
      */
-    function getClassAttendanceRate(uint256 classId) external view returns (uint256) {
+    function getClassAttendanceRate(uint256 /*classId*/) external pure returns (uint256) {
         // TODO: Implement attendance rate calculation
         // Rate = (Present + Late) / Total Sessions * 100
         return 0;

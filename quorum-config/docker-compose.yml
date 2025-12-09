@@ -1,137 +1,178 @@
-version: '3.8'
-
 services:
-  # Quorum Node 1 (Primary)
   quorum-node1:
     image: quorumengineering/quorum:latest
     container_name: quorum-node1
+    entrypoint: ["geth"]
     ports:
       - "22000:8545"
       - "22001:8546"
       - "30303:30303"
     volumes:
       - ./genesis.json:/genesis.json
-      - quorum-node1-data:/data
-    command: >
-      --datadir /data
-      --genesis /genesis.json
-      --nodiscover
-      --verbosity 3
-      --networkid 1337
-      --http
-      --http.addr 0.0.0.0
-      --http.port 8545
-      --http.api admin,eth,debug,miner,net,txpool,personal,web3,istanbul
-      --http.corsdomain "*"
-      --ws
-      --ws.addr 0.0.0.0
-      --ws.port 8546
-      --ws.api admin,eth,debug,miner,net,txpool,personal,web3,istanbul
-      --ws.origins "*"
-      --port 30303
-      --unlock 0
-      --password /dev/null
-      --allow-insecure-unlock
-      --emitcheckpoints
-      --istanbul.blockperiod 5
-      --mine
-      --miner.threads 1
-      --syncmode full
+      - ./quorum-node1-data:/data
+      - ./static-nodes.json:/data/geth/static-nodes.json
+      - ./password.txt:/data/password.txt
+    command:
+      - "--datadir"
+      - "/data"
+      - "--networkid"
+      - "1337"
+      - "--verbosity"
+      - "3"
+      - "--http"
+      - "--http.addr"
+      - "0.0.0.0"
+      - "--http.port"
+      - "8545"
+      - "--http.api"
+      - "admin,eth,debug,miner,net,txpool,personal,web3,istanbul"
+      - "--http.corsdomain"
+      - "*"
+      - "--ws"
+      - "--ws.addr"
+      - "0.0.0.0"
+      - "--ws.port"
+      - "8546"
+      - "--ws.api"
+      - "admin,eth,debug,miner,net,txpool,personal,web3,istanbul"
+      - "--ws.origins"
+      - "*"
+      - "--port"
+      - "30303"
+      - "--unlock"
+      - "0x7f34479456ea71e9b3ba5d95a78b1965aa75c8cf"
+      - "--miner.etherbase"
+      - "0x7f34479456ea71e9b3ba5d95a78b1965aa75c8cf"
+      - "--password"
+      - "/data/password.txt"
+      - "--allow-insecure-unlock"
+      - "--emitcheckpoints"
+      - "--istanbul.blockperiod"
+      - "5"
+      - "--mine"
+      - "--miner.threads"
+      - "1"
+      - "--syncmode"
+      - "full"
     networks:
       - quorum-network
-    healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8545"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
 
-  # Quorum Node 2 (Validator)
   quorum-node2:
     image: quorumengineering/quorum:latest
     container_name: quorum-node2
+    entrypoint: ["geth"]
     ports:
       - "22002:8545"
       - "22003:8546"
       - "30304:30303"
     volumes:
       - ./genesis.json:/genesis.json
-      - quorum-node2-data:/data
-    command: >
-      --datadir /data
-      --genesis /genesis.json
-      --nodiscover
-      --verbosity 3
-      --networkid 1337
-      --http
-      --http.addr 0.0.0.0
-      --http.port 8545
-      --http.api admin,eth,debug,miner,net,txpool,personal,web3,istanbul
-      --http.corsdomain "*"
-      --ws
-      --ws.addr 0.0.0.0
-      --ws.port 8546
-      --ws.api admin,eth,debug,miner,net,txpool,personal,web3,istanbul
-      --ws.origins "*"
-      --port 30303
-      --unlock 0
-      --password /dev/null
-      --allow-insecure-unlock
-      --emitcheckpoints
-      --istanbul.blockperiod 5
-      --mine
-      --miner.threads 1
-      --syncmode full
+      - ./quorum-node2-data:/data
+      - ./static-nodes.json:/data/geth/static-nodes.json
+      - ./password.txt:/data/password.txt
+    command:
+      - "--datadir"
+      - "/data"
+      - "--networkid"
+      - "1337"
+      - "--verbosity"
+      - "3"
+      - "--http"
+      - "--http.addr"
+      - "0.0.0.0"
+      - "--http.port"
+      - "8545"
+      - "--http.api"
+      - "admin,eth,debug,miner,net,txpool,personal,web3,istanbul"
+      - "--http.corsdomain"
+      - "*"
+      - "--ws"
+      - "--ws.addr"
+      - "0.0.0.0"
+      - "--ws.port"
+      - "8546"
+      - "--ws.api"
+      - "admin,eth,debug,miner,net,txpool,personal,web3,istanbul"
+      - "--ws.origins"
+      - "*"
+      - "--port"
+      - "30303"
+      - "--unlock"
+      - "0x22b6d51b637ce6e3dd9ba1a734bf0e8a20bed76b"
+      - "--miner.etherbase"
+      - "0x22b6d51b637ce6e3dd9ba1a734bf0e8a20bed76b"
+      - "--password"
+      - "/data/password.txt"
+      - "--allow-insecure-unlock"
+      - "--emitcheckpoints"
+      - "--istanbul.blockperiod"
+      - "5"
+      - "--mine"
+      - "--miner.threads"
+      - "1"
+      - "--syncmode"
+      - "full"
     networks:
       - quorum-network
-    depends_on:
-      - quorum-node1
 
-  # Quorum Node 3 (Validator)
   quorum-node3:
     image: quorumengineering/quorum:latest
     container_name: quorum-node3
+    entrypoint: ["geth"]
     ports:
       - "22004:8545"
       - "22005:8546"
       - "30305:30303"
     volumes:
       - ./genesis.json:/genesis.json
-      - quorum-node3-data:/data
-    command: >
-      --datadir /data
-      --genesis /genesis.json
-      --nodiscover
-      --verbosity 3
-      --networkid 1337
-      --http
-      --http.addr 0.0.0.0
-      --http.port 8545
-      --http.api admin,eth,debug,miner,net,txpool,personal,web3,istanbul
-      --http.corsdomain "*"
-      --ws
-      --ws.addr 0.0.0.0
-      --ws.port 8546
-      --ws.api admin,eth,debug,miner,net,txpool,personal,web3,istanbul
-      --ws.origins "*"
-      --port 30303
-      --unlock 0
-      --password /dev/null
-      --allow-insecure-unlock
-      --emitcheckpoints
-      --istanbul.blockperiod 5
-      --mine
-      --miner.threads 1
-      --syncmode full
+      - ./quorum-node3-data:/data
+      - ./static-nodes.json:/data/geth/static-nodes.json
+      - ./password.txt:/data/password.txt
+    command:
+      - "--datadir"
+      - "/data"
+      - "--networkid"
+      - "1337"
+      - "--verbosity"
+      - "3"
+      - "--http"
+      - "--http.addr"
+      - "0.0.0.0"
+      - "--http.port"
+      - "8545"
+      - "--http.api"
+      - "admin,eth,debug,miner,net,txpool,personal,web3,istanbul"
+      - "--http.corsdomain"
+      - "*"
+      - "--ws"
+      - "--ws.addr"
+      - "0.0.0.0"
+      - "--ws.port"
+      - "8546"
+      - "--ws.api"
+      - "admin,eth,debug,miner,net,txpool,personal,web3,istanbul"
+      - "--ws.origins"
+      - "*"
+      - "--port"
+      - "30303"
+      - "--unlock"
+      - "0x3e8580762230b9c6377a4f23e7f76e12ac386a19"
+      - "--miner.etherbase"
+      - "0x3e8580762230b9c6377a4f23e7f76e12ac386a19"
+      - "--password"
+      - "/data/password.txt"
+      - "--allow-insecure-unlock"
+      - "--emitcheckpoints"
+      - "--istanbul.blockperiod"
+      - "5"
+      - "--mine"
+      - "--miner.threads"
+      - "1"
+      - "--syncmode"
+      - "full"
     networks:
       - quorum-network
-    depends_on:
-      - quorum-node1
 
 networks:
   quorum-network:
     driver: bridge
-
-volumes:
-  quorum-node1-data:
-  quorum-node2-data:
-  quorum-node3-data:

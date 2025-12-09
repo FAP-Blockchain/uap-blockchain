@@ -4,6 +4,28 @@ import "@nomicfoundation/hardhat-ethers";
 import "@typechain/hardhat";
 import "dotenv/config";
 
+const {
+  QUORUM_NODE_URL,
+  QUORUM_NODE2_URL,
+  QUORUM_CHAIN_ID,
+  QUORUM_MNEMONIC,
+  ADMIN_PRIVATE_KEY
+} = process.env;
+
+// Default Hardhat test account (funded in genesis.json)
+const DEFAULT_PRIVATE_KEY = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
+
+const quorumAccounts = ADMIN_PRIVATE_KEY
+  ? [ADMIN_PRIVATE_KEY]
+  : QUORUM_MNEMONIC
+  ? {
+      mnemonic: QUORUM_MNEMONIC,
+      path: "m/44'/60'/0'/0",
+      initialIndex: 0,
+      count: 10
+    }
+  : [DEFAULT_PRIVATE_KEY]; // Fallback to default funded account
+
 const config: HardhatUserConfig = {
   solidity: {
     version: "0.8.28",
@@ -33,26 +55,19 @@ const config: HardhatUserConfig = {
     },
     
     quorum_local: {
-      url: process.env.QUORUM_NODE_URL || "http://127.0.0.1:22000",
-      chainId: parseInt(process.env.QUORUM_CHAIN_ID || "1337"),
-      gas: 5000000,
+      url: QUORUM_NODE_URL || "http://127.0.0.1:22000",
+      chainId: parseInt(QUORUM_CHAIN_ID || "1337"),
+      gas: "auto", // Allow auto estimation
       gasPrice: 0,
-      accounts: {
-        mnemonic: process.env.QUORUM_MNEMONIC || "test test test test test test test test test test test junk",
-        path: "m/44'/60'/0'/0",
-        initialIndex: 0,
-        count: 10
-      }
+      accounts: quorumAccounts
     },
     
     quorum_node2: {
-      url: process.env.QUORUM_NODE2_URL || "http://127.0.0.1:22001",
-      chainId: parseInt(process.env.QUORUM_CHAIN_ID || "1337"),
-      gas: 4700000,
+      url: QUORUM_NODE2_URL || "http://127.0.0.1:22002", // Fixed port from 22001 to 22002 (Node 2 RPC)
+      chainId: parseInt(QUORUM_CHAIN_ID || "1337"),
+      gas: "auto",
       gasPrice: 0,
-      accounts: {
-        mnemonic: process.env.QUORUM_MNEMONIC || "test test test test test test test test test test test junk"
-      }
+      accounts: quorumAccounts
     }
   },
   

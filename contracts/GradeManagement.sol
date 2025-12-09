@@ -3,10 +3,7 @@ pragma solidity ^0.8.28;
 
 import "./interfaces/IGrade.sol";
 import "./libraries/DataTypes.sol";
-
-interface IUniversityManagement {
-    function requireRole(address userAddress, DataTypes.Role role) external view;
-}
+import "./interfaces/IUniversityManagement.sol";
 
 /**
  * @title GradeManagement
@@ -22,8 +19,8 @@ contract GradeManagement is IGrade {
     uint256 public gradeCount;
     
     // Modifiers
-    modifier onlyLecturer() {
-        IUniversityManagement(universityManagement).requireRole(msg.sender, DataTypes.Role.LECTURER);
+    modifier onlyTeacher() {
+        IUniversityManagement(universityManagement).requireRole(msg.sender, DataTypes.Role.TEACHER);
         _;
     }
     
@@ -46,7 +43,7 @@ contract GradeManagement is IGrade {
         string calldata componentName,
         uint256 score,
         uint256 maxScore
-    ) external onlyLecturer returns (uint256) {
+    ) external onlyTeacher returns (uint256) {
         require(studentAddress != address(0), "Invalid student address");
         require(classId > 0, "Invalid class ID");
         require(bytes(componentName).length > 0, "Component name required");
@@ -82,7 +79,7 @@ contract GradeManagement is IGrade {
     function updateGrade(
         uint256 gradeId,
         uint256 newScore
-    ) external onlyLecturer {
+    ) external onlyTeacher {
         require(gradeRecords[gradeId].gradeId != 0, "Grade not found");
         require(
             gradeRecords[gradeId].status == DataTypes.GradeStatus.DRAFT,

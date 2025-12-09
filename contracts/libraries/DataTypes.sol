@@ -10,7 +10,7 @@ library DataTypes {
     enum Role {
         NONE,           // 0: No role
         ADMIN,          // 1: System administrator (includes staff duties)
-        LECTURER,       // 2: Teaching staff
+        TEACHER,        // 2: Teaching staff (was LECTURER)
         STUDENT         // 3: Student
     }
 

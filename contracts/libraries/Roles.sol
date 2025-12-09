@@ -106,13 +106,13 @@ library Roles {
     }
 
     /**
-     * @notice Check if account is lecturer
+     * @notice Check if account is teacher
      */
-    function isLecturer(
+    function isTeacher(
         RoleData storage self,
         address account
     ) internal view returns (bool) {
-        return self.roles[account] == DataTypes.Role.LECTURER;
+        return self.roles[account] == DataTypes.Role.TEACHER;
     }
 
     /**

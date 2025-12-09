@@ -3,10 +3,7 @@ pragma solidity ^0.8.28;
 
 import "./interfaces/ICredential.sol";
 import "./libraries/DataTypes.sol";
-
-interface IUniversityManagement {
-    function requireRole(address userAddress, DataTypes.Role role) external view;
-}
+import "./interfaces/IUniversityManagement.sol";
 
 /**
  * @title CredentialManagement

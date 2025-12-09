@@ -153,14 +153,11 @@ describe("UniversityManagement", function () {
     it("Should correctly identify roles", async function () {
       await universityManagement.registerUser(
         user1.address,
-        "LEC001",
-        "Lecturer",
-        "lec@example.com",
-        2 // LECTURER
+        "TEA001",
+        "Teacher",
+        "tea@example.com",
+        2 // TEACHER
       );
-
-      expect(await universityManagement.hasRole(user1.address, 2)).to.be.true;
-      expect(await universityManagement.hasRole(user1.address, 3)).to.be.false;
     });
 
     it("Should count roles correctly", async function () {

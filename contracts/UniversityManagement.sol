@@ -3,13 +3,14 @@ pragma solidity ^0.8.28;
 
 import "./libraries/DataTypes.sol";
 import "./libraries/Roles.sol";
+import "./interfaces/IUniversityManagement.sol";
 
 /**
  * @title UniversityManagement
  * @notice Main contract orchestrating the UAP Blockchain system
  * @dev Manages users, roles, and references to other system contracts
  */
-contract UniversityManagement {
+contract UniversityManagement is IUniversityManagement {
     using Roles for Roles.RoleData;
 
     // State variables
@@ -192,6 +193,13 @@ contract UniversityManagement {
         return users[userAddress];
     }
 
+    /**
+     * @notice Convenience helper for a user to read their own on-chain profile
+     */
+    function getMyUser() external view returns (DataTypes.User memory) {
+        return users[msg.sender];
+    }
+
     function getUserRole(address userAddress) external view returns (DataTypes.Role) {
         return roleData.getRole(userAddress);
     }
@@ -210,5 +218,44 @@ contract UniversityManagement {
 
     function getRoleCount(DataTypes.Role role) external view returns (uint256) {
         return roleData.getRoleCount(role);
+    }
+
+    /**
+     * @notice Update the wallet address associated with an existing user while preserving userId and metadata
+     * @dev Admin-only operation intended for wallet rotation / recovery scenarios
+     * @param oldAddress The current wallet address of the user
+     * @param newAddress The new wallet address to associate with the same userId
+     */
+    function updateUserAddress(address oldAddress, address newAddress) external onlyAdmin {
+        require(oldAddress != address(0) && newAddress != address(0), "Invalid address");
+        require(users[oldAddress].isActive, "User not found or inactive");
+        require(users[newAddress].userAddress == address(0), "New address already registered");
+
+        DataTypes.User storage existingUser = users[oldAddress];
+
+        // Move role assignment from old to new address
+        DataTypes.Role existingRole = roleData.getRole(oldAddress);
+        roleData.revokeRole(oldAddress);
+        if (existingRole != DataTypes.Role.NONE) {
+            roleData.grantRole(newAddress, existingRole);
+        }
+
+        // Create a new user struct for the new address, preserving metadata
+        users[newAddress] = DataTypes.User({
+            userAddress: newAddress,
+            userId: existingUser.userId,
+            fullName: existingUser.fullName,
+            email: existingUser.email,
+            role: existingUser.role,
+            isActive: existingUser.isActive,
+            createdAt: existingUser.createdAt
+        });
+
+        // Update userId mapping to point to the new address
+        userIdToAddress[existingUser.userId] = newAddress;
+
+        // Mark old address as inactive and clear its record
+        existingUser.isActive = false;
+        existingUser.userAddress = address(0);
     }
 }

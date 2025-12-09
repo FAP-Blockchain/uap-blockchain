@@ -173,6 +173,14 @@ curl -X POST http://127.0.0.1:22000 \
 docker-compose restart
 ```
 
+### Node 1 Not Mining (Unauthorized)
+
+If Node 1 logs show "Unauthorized" or it fails to seal blocks, it usually means the `nodekey` does not match the validator address in `genesis.json`.
+
+1. Check the validator address in `docker-compose.yml` (entry `--unlock`).
+2. Ensure `quorum-node1-data/geth/nodekey` corresponds to that address.
+3. If needed, regenerate the nodekey or restore the correct one.
+
 ### Data Corruption
 
 ```bash
@@ -210,12 +218,27 @@ docker-compose up -d
 
 ## Next Steps
 
-1. Deploy smart contracts: `npm run deploy:quorum`
-2. Setup initial roles: `npx hardhat run scripts/setup-roles.ts --network quorum_local`
-3. Verify deployment: `npx hardhat run scripts/verify.ts --network quorum_local`
+1. **Deploy Smart Contracts**:
+   ```bash
+   npx hardhat run scripts/deploy.ts --network quorum_local
+   # Or use the npm script:
+   # npm run deploy:quorum
+   ```
+   *This will generate a `deployments.json` file containing contract addresses.*
+
+2. **Setup Initial Roles**:
+   ```bash
+   npx hardhat run scripts/setup-roles.ts --network quorum_local
+   ```
+   *This script reads `deployments.json` and initializes admin/teacher roles.*
+
+3. **Verify Deployment**:
+   ```bash
+   npx hardhat run scripts/verify.ts --network quorum_local
+   ```
 
 ---
 
 **Network**: Quorum 3-node Istanbul BFT  
 **Chain ID**: 1337  
-**Last Updated**: November 2025
+**Last Updated**: December 2025

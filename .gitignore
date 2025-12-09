@@ -30,3 +30,8 @@ npm-debug.log*
 # Test coverage
 coverage/
 .nyc_output/
+
+#Quorum geth data
+quorum-config/quorum-node1-data/
+quorum-config/quorum-node2-data/
+quorum-config/quorum-node3-data/
